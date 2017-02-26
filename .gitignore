@@ -1,0 +1,15 @@
+/#recentf#
+/.mc-lists.el
+/bookmarks
+/emacs.desktop
+/lock
+/projectile-bookmarks.eld
+/projectile.cache
+/recentf
+/tramp
+auto-save-list/*
+el-get/*
+elpa/*
+git/*
+semanticdb/*
+url/*
