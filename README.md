@@ -166,3 +166,8 @@ that they need attention or have been changed.  To push your changes
 up to the server you can now do:
 
     P u
+
+# Wrap Up
+
+These three plugins to emacs should greatly expand your efficiency
+editing clojure, happy hacking! :)
