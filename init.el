@@ -33,7 +33,7 @@
 ;(use-package markdown-mode :ensure t
 ;:commands (markdown-mode gfm-mode) :mode (("README\\.md\\'" . gfm-mode) ("\\.md\\'" . markdown-mode) ("\\.markdown\\'" . markdown-mode))
 ;:init (setq markdown-command "multimarkdown"))
-
+(use-package lua-mode :ensure lua-mode)
 (use-package clojure-more :ensure clojure-mode)
 (use-package sayid :ensure sayid)
 (use-package color-theme :ensure color-theme)
@@ -195,9 +195,15 @@
    (cider-interactive-eval
     "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")))
 
-(defun fw2 ()
-  (interactive
-   (setq cider-cljs-lein-repl "(do (ra/start-figwheel!) (ra/cljs-repl)")))
+;; (defun fw2 ()
+;;   (interactive
+;;    (setq cider-cljs-lein-repl "(do (ra/start-figwheel!) (ra/cljs-repl)")))
+
+(setq cider-cljs-lein-repl
+      "(do (require 'figwheel-sidecar.repl-api)
+           (figwheel-sidecar.repl-api/start-figwheel!)
+           (figwheel-sidecar.repl-api/cljs-repl))")
+
 
 ;; (autoload 'inf-clojure "inf-clojure" "Run an inferior Clojure process" t)
 ;;    (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
@@ -354,3 +360,4 @@
     (sayid use-package undo-tree magit lispy inf-clojure highlight-parentheses helm-projectile haskell-mode floobits company color-theme clj-refactor))))
 (setq cider-repl-clear-help-banner nil)
 (setq org-src-fontify-natively t)
+

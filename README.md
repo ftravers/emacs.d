@@ -167,6 +167,23 @@ up to the server you can now do:
 
     P u
 
+## File History
+
+Cool feature I just discovered.  You can scroll through versions of a
+file.  First you get into magit log mode with: 
+
+   C-c g
+   l l
+
+This will show the commits you have made on a project.  You can select
+one with `n`ext or `p`revious.  Once on a commit you want to inspect
+hit `Enter`.  Now that commit will be shown, including diff data.  You
+can `n`ext / `p`revious to the desired filename and then hit `Enter`
+again.  Now with the file open you can again use `n` or `p` to go to
+next or previous revisions.  If you `n` far enough, you'll drop out of
+this scrolling behaviour and just be dropped into the most recent
+version of the file.
+
 # Wrap Up
 
 These three plugins to emacs should greatly expand your efficiency
