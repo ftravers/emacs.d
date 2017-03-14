@@ -173,6 +173,9 @@ Cool feature I just discovered.  You can scroll through versions of a
 file.  First you get into magit log mode with: 
 
    C-c g
+   
+now go to the log history with:   
+   
    l l
 
 This will show the commits you have made on a project.  You can select
