@@ -34,6 +34,8 @@
 ;:commands (markdown-mode gfm-mode) :mode (("README\\.md\\'" . gfm-mode) ("\\.md\\'" . markdown-mode) ("\\.markdown\\'" . markdown-mode))
 ;:init (setq markdown-command "multimarkdown"))
 (use-package lua-mode :ensure lua-mode)
+(use-package markdown-mode :ensure markdown-mode)
+(use-package ox-gfm :ensure ox-gfm)
 (use-package clojure-more :ensure clojure-mode)
 (use-package sayid :ensure sayid)
 (use-package color-theme :ensure color-theme)
@@ -111,8 +113,11 @@
       desktop-base-file-name      "emacs.desktop"
       desktop-base-lock-name      "lock"
       desktop-path                (list desktop-dirname)
-      desktop-files-not-to-save   "^$" ) 
+      desktop-files-not-to-save   "^$" )
+
+
 (desktop-save-mode 1)
+
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 (setq initial-scratch-message nil) ;; Don't insert instructions in the *scratch* buffer
@@ -124,7 +129,9 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;; When emacs asks for "yes" or "no", let "y" or "n" sufficide
 (setq scroll-step 1) ;; Scroll one line (not half a page) when moving past the bottom of the window
 (setq indent-tabs-mode nil);; No tabs but spaces for indentation
-(setq-default truncate-lines t) ;; dont wrap long 
+(setq-default truncate-lines t)
+;; (setq-default truncate-lines nil)
+;; dont wrap long 
 (setq-default indent-tabs-mode nil) ; always replace tabs with spaces
 (setq-default tab-width 2) ; set tab width to 4 for all buffers
 (setq tab-stop-list '(2 4 6 8 10 12 14 16))
@@ -143,6 +150,8 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
+
+
 ;; when opening a file, if intermediate folders dont exist, create them.
 (add-hook 'before-save-hook
           (lambda ()
@@ -177,11 +186,21 @@
 ;  (define-key lispy-mode-map-x key nil)
   ) 
 
+(defun collapse-expand () (interactive)
+       (hs-toggle-hiding)
+       (beginning-of-line))
+
+
+
 (eval-after-load "lispy"
   `(progn
      (my-remove-lispy-key (kbd "d"))
-     (lispy-define-key lispy-mode-map (kbd "d") 'lispy-kill-at-point)))
+     (lispy-define-key lispy-mode-map (kbd "e") 'cider-eval-last-sexp)
+     (lispy-define-key lispy-mode-map (kbd "d") 'lispy-kill-at-point)
+     (lispy-define-key lispy-mode-map (kbd "x") 'collapse-expand)))
 
+
+;; cider-eval-last-sexp
 ;; ---------------------------
 ;;   CIDER
 (setq cider-repl-use-pretty-printing t)
@@ -231,38 +250,34 @@
 
 ;; (define-key cider-mode-map (kbd "C-c r") 'cider-repl-refresh)
 
-
 (setq cljr-warn-on-eval nil)
 
 (add-hook 'cider-repl-mode-hook
           '(lambda ()
              (define-key cider-repl-mode-map (kbd "C-c r") #'cider-repl-refresh)))
 
+(setq hide-all t)
+
+(defun toggle-show-hide-all () (interactive)
+       (if hide-all
+           (progn
+             (hs-show-all)
+             (setq hide-all nil))
+         (progn (hs-hide-all)
+                (setq hide-all t))))
+
 (add-hook
  'clojure-mode-hook
  (lambda ()
    #'inf-clojure-minor-mode
-   ;; (define-key clojure-mode-map (kbd "C-c j") #'cider-jack-in)
    (define-key clojure-mode-map (kbd "C-c r") #'mount-reset)
    (define-key clojure-mode-map (kbd "C-c c") #'figwheel-cljs-repl)
+   (define-key clojure-mode-map (kbd "C-c l") #'lispy-mode)
+   (define-key clojure-mode-map (kbd "C-c s") #'toggle-show-hide-all)
+   
    (clj-refactor-mode 1)
-   (yas-minor-mode 1)       ; for adding require/use/import statements
-   ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-   (cljr-add-keybindings-with-prefix "C-c C-m")
-   (cider-mode 1)
-   ))
-
-
-
-
-;; (define-key clojure-mode-map (kbd "M-r") 'cider-namespace-refresh)
-
-;; (require 'cider)
-;; (setq cider-cljs-lein-repl
-;;       "(do (require 'figwheel-sidecar.repl-api)
-;;            (figwheel-sidecar.repl-api/start-figwheel!)
-;;            (figwheel-sidecar.repl-api/cljs-repl))")
-
+   (cljr-add-keybindings-with-prefix "C-c C-m") ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+   (cider-mode 1)))
 
 ;; ----------------------------------------------
 ;; HIGHLIGHT PARENS
@@ -271,13 +286,6 @@
         "slateblue1" "magenta1" "purple"))
 (setq hl-paren-background-colors
       '("black" "black" "black" "black" "black" "black" "black" "black"))
-
-(defun collapse-expand () (interactive)
-       (hs-toggle-hiding)
-       (beginning-of-line))
-
-
-
 
 
 (add-hook 'prog-mode-hook
@@ -322,7 +330,11 @@
 (diminish 'lispy-mode)
 (eval-after-load "company" '(diminish 'company-mode))
 (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
-;; (eval-after-load "cider" '(diminish 'cider-mode))
+(eval-after-load "cider" '(diminish 'cider-mode))
+(eval-after-load "yas" '(diminish 'yas-mode))
+(eval-after-load "cljr" '(diminish 'cljr-mode))
+(eval-after-load "eldoc" '(diminish 'eldoc-mode))
+(eval-after-load "clojure" '(diminish 'clojure-mode))
 (eval-after-load "highlight-parentheses" '(diminish 'highlight-parentheses-mode))
 (add-hook 'hs-minor-mode-hook (lambda () (diminish 'hs-minor-mode)))
 (add-hook 'highlight-parentheses-mode-hook (lambda () (diminish 'highlight-parentheses-mode)))
@@ -361,3 +373,20 @@
 (setq cider-repl-clear-help-banner nil)
 (setq org-src-fontify-natively t)
 
+;; try to get org-mode to output clojure tag for source code blocks
+;; (setq org-export-filter-src-block-functions)
+
+(defun org2markdown-bring-code (src backend info)
+  (progn
+    ;; (message "info::: %s" info)
+    (if (member :language info)
+        (concat "```clojure\n" src "```\n\n")
+      src)))
+
+(eval-after-load 'ox
+  '(progn
+     (add-to-list 'org-export-filter-src-block-functions
+                  'org2markdown-bring-code)))
+
+;; (debug-on-entry 'org2markdown-bring-code)
+;; (cancel-debug-on-entry 'org2markdown-bring-code)
